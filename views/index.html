@@ -24,7 +24,23 @@
           </fieldset>
         </form>
       </section>
-    </main>
+
+      <section style="margin-top: 40px;">
+        <legend>Test Links (Assumes Server Runs on Port 3000)</legend>
+        
+        <h3>Redirection Examples:</h3>
+        <p>1. Redirect to first submitted URL (ID 1): <a href="http://localhost:3000/api/shorturl/1">http://localhost:3000/api/shorturl/1</a></p>
+        <p>2. Redirect to second submitted URL (ID 2): <a href="http://localhost:3000/api/shorturl/2">http://localhost:3000/api/shorturl/2</a></p>
+        <p>and so on...</p>
+        
+        <br>
+        
+        <h3>Error Examples:</h3>
+        <p>1. Invalid ID Format: <a href="http://localhost:3000/api/shorturl/abc">http://localhost:3000/api/shorturl/abc</a> (Should return <code>{"error":"wrong format"}</code>)</p>
+        <p>2. Non-existent ID: <a href="http://localhost:3000/api/shorturl/999">http://localhost:3000/api/shorturl/999</a> (Should return <code>{"error":"no short url found..."}</code>)</p>
+        
+      </section>
+      </main>
     <footer>
       <p>By <a href="https://www.freecodecamp.org/">freeCodeCamp</a></p>
     </footer>
