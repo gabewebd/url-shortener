@@ -31,6 +31,54 @@ section {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05); /* very light, lifted shadow */
 }
 
+/* Usage section left alignment */
+.usage-section {
+  text-align: left;
+}
+
+.usage-section .section-title,
+.usage-section .example-title,
+.usage-section .test-title,
+.usage-section .subtitle {
+  text-align: left;
+}
+
+.usage-steps {
+  text-align: left;
+  margin-left: 20px;
+}
+
+.step-item {
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.example-usage {
+  text-align: left;
+}
+
+.example-code, 
+.example-result, 
+.example-redirect {
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.test-links {
+  text-align: left;
+}
+
+.redirection-examples, 
+.error-examples {
+  text-align: left;
+}
+
+.test-link-item, 
+.error-item {
+  text-align: left;
+  margin-bottom: 10px;
+}
+
 a {
   color: #2e8b57; /* sea green links */
   text-decoration: none;

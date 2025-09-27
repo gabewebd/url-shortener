@@ -25,22 +25,38 @@
         </form>
       </section>
 
-      <section style="margin-top: 40px;">
-        <legend>Test Links (Assumes Server Runs on Port 3000)</legend>
+      <section class="usage-section">
+        <h2 class="section-title">How to Use:</h2>
+        <ol class="usage-steps">
+          <li class="step-item">Enter a valid URL in the form above (must include http:// or https://)</li>
+          <li class="step-item">Click "POST URL" to get a shortened URL</li>
+          <li class="step-item">Use the shortened URL to redirect to your original URL</li>
+        </ol>
         
-        <h3>Redirection Examples:</h3>
-        <p>1. Redirect to first submitted URL (ID 1): <a href="http://localhost:3000/api/shorturl/1">http://localhost:3000/api/shorturl/1</a></p>
-        <p>2. Redirect to second submitted URL (ID 2): <a href="http://localhost:3000/api/shorturl/2">http://localhost:3000/api/shorturl/2</a></p>
-        <p>and so on...</p>
+        <div class="example-usage">
+          <h3 class="example-title">Example Usage:</h3>
+          <p class="example-code"><strong>POST</strong> <code>/api/shorturl</code> with body <code>url=https://www.google.com</code></p>
+          <p class="example-result"><strong>Returns:</strong> <code>{"original_url":"https://www.google.com","short_url":1}</code></p>
+          <p class="example-redirect"><strong>Visit:</strong> <code>/api/shorturl/1</code> to redirect to Google</p>
+        </div>
         
-        <br>
-        
-        <h3>Error Examples:</h3>
-        <p>1. Invalid ID Format: <a href="http://localhost:3000/api/shorturl/abc">http://localhost:3000/api/shorturl/abc</a> (Should return <code>{"error":"wrong format"}</code>)</p>
-        <p>2. Non-existent ID: <a href="http://localhost:3000/api/shorturl/999">http://localhost:3000/api/shorturl/999</a> (Should return <code>{"error":"no short url found..."}</code>)</p>
-        
+        <div class="test-links">
+          <h3 class="test-title">Test Links (Assumes Server Runs on Port 3000):</h3>
+          
+          <div class="redirection-examples">
+            <h4 class="subtitle">Redirection Examples (after creating short URLs):</h4>
+            <p class="test-link-item">1. Redirect to first submitted URL (ID 1): <a href="http://localhost:3000/api/shorturl/1" class="test-link">http://localhost:3000/api/shorturl/1</a></p>
+            <p class="test-link-item">2. Redirect to second submitted URL (ID 2): <a href="http://localhost:3000/api/shorturl/2" class="test-link">http://localhost:3000/api/shorturl/2</a></p>
+          </div>
+          
+          <div class="error-examples">
+            <h4 class="subtitle">Error Examples:</h4>
+            <p class="error-item">1. Invalid ID Format: <a href="http://localhost:3000/api/shorturl/abc" class="test-link">http://localhost:3000/api/shorturl/abc</a> (Should return <code>{"error":"wrong format"}</code>)</p>
+            <p class="error-item">2. Non-existent ID: <a href="http://localhost:3000/api/shorturl/999" class="test-link">http://localhost:3000/api/shorturl/999</a> (Should return <code>{"error":"no short url found..."}</code>)</p>
+          </div>
+        </div>
       </section>
-      </main>
+    </main>
     <footer>
       <p>By <a href="https://www.freecodecamp.org/">freeCodeCamp</a></p>
     </footer>

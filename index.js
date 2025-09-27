@@ -1,21 +1,18 @@
-require('dotenv').config({ path: './sample.env' });
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const dns = require('dns'); // dns module for url validation
+const dns = require('dns');
+const url = require('url');
+
 const app = express();
 
-// basic configuration
+// Basic Configuration
 const port = process.env.PORT || 3000;
 
-// simple in-memory storage for urls
-const urlDatabase = [];
-let shortUrlCounter = 1;
-
+// Middleware
 app.use(cors());
-
-// middleware to parse post bodies
-app.use(express.urlencoded({ extended: true })); 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/public', express.static(`${process.cwd()}/public`));
 
@@ -23,72 +20,109 @@ app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
+// Your first API endpoint
 app.get('/api/hello', function(req, res) {
-  res.json({ greeting: 'hello api' });
+  res.json({ greeting: 'hello API' });
 });
 
-// post /api/shorturl - creates a short url
-app.post('/api/shorturl', function(req, res) {
-  const originalUrl = req.body.url;
+// URL Shortener functionality
+let urlDatabase = [];
+let urlCounter = 1;
 
-  // basic url format validation
-  const urlRegex = /^(https?:\/\/)([\w\d-]+\.)+[\w\d]{2,}(\/[\w\d-._~:/?#\[\]@!$&'()*+,;=]*)?$/i;
-
-  if (!urlRegex.test(originalUrl)) {
-    return res.json({ error: 'invalid url' });
-  }
-
-  // extract hostname for dns lookup
-  let hostname;
+// Helper function to validate URL
+function isValidUrl(string) {
   try {
-    hostname = new URL(originalUrl).hostname;
-  } catch (e) {
+    const parsedUrl = new URL(string);
+    return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+  } catch (err) {
+    return false;
+  }
+}
+
+// Helper function to validate URL using DNS lookup
+function validateUrlWithDns(inputUrl, callback) {
+  try {
+    const parsedUrl = new URL(inputUrl);
+    dns.lookup(parsedUrl.hostname, (err) => {
+      if (err) {
+        callback(false);
+      } else {
+        callback(true);
+      }
+    });
+  } catch (err) {
+    callback(false);
+  }
+}
+
+// POST endpoint for shortening URLs
+app.post('/api/shorturl', (req, res) => {
+  const originalUrl = req.body.url;
+  
+  if (!originalUrl) {
     return res.json({ error: 'invalid url' });
   }
-
-  // dns lookup to verify host existence
-  dns.lookup(hostname, (err) => {
-    if (err) {
-      // dns lookup failure means invalid host
+  
+  // Check if URL is valid format
+  if (!isValidUrl(originalUrl)) {
+    return res.json({ error: 'invalid url' });
+  }
+  
+  // Validate URL using DNS lookup
+  validateUrlWithDns(originalUrl, (isValid) => {
+    if (!isValid) {
       return res.json({ error: 'invalid url' });
     }
-
-    // check if url already exists
-    const existingEntry = urlDatabase.find(item => item.original_url === originalUrl);
-    if (existingEntry) {
-      return res.json(existingEntry);
+    
+    // Check if URL already exists in database
+    const existingUrl = urlDatabase.find(entry => entry.original_url === originalUrl);
+    
+    if (existingUrl) {
+      return res.json({
+        original_url: existingUrl.original_url,
+        short_url: existingUrl.short_url
+      });
     }
-
-    // create new entry
-    const newEntry = {
+    
+    // Create new short URL
+    const newUrl = {
       original_url: originalUrl,
-      short_url: shortUrlCounter++
+      short_url: urlCounter
     };
-    urlDatabase.push(newEntry);
-
-    res.json(newEntry);
+    
+    urlDatabase.push(newUrl);
+    
+    res.json({
+      original_url: originalUrl,
+      short_url: urlCounter
+    });
+    
+    urlCounter++;
   });
 });
 
-// get /api/shorturl/:short_url - redirects to original url
-app.get('/api/shorturl/:short_url', function(req, res) {
-  const shortUrlId = parseInt(req.params.short_url, 10);
-
-  if (isNaN(shortUrlId)) {
+// GET endpoint for redirecting short URLs
+app.get('/api/shorturl/:short_url', (req, res) => {
+  const shortUrl = parseInt(req.params.short_url);
+  
+  if (isNaN(shortUrl)) {
     return res.json({ error: 'wrong format' });
   }
-
-  const urlEntry = urlDatabase.find(item => item.short_url === shortUrlId);
-
-  if (urlEntry) {
-    // perform the redirect
-    res.redirect(urlEntry.original_url);
-  } else {
-    res.json({ error: 'no short url found for the given input' });
+  
+  const urlEntry = urlDatabase.find(entry => entry.short_url === shortUrl);
+  
+  if (!urlEntry) {
+    return res.json({ error: 'no short url found...' });
   }
+  
+  res.redirect(urlEntry.original_url);
 });
 
-// server listener
+// Additional endpoint to see all shortened URLs (for testing)
+app.get('/api/shorturl', (req, res) => {
+  res.json(urlDatabase);
+});
+
 app.listen(port, function() {
-  console.log(`listening on port ${port}`);
+  console.log(`Listening on port ${port}`);
 });
